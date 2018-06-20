@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	   xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/jdbc
+         http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+         http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+         ">  
+         
+    <!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+    <!-- (in this case, JDBC-related settings for the dataSource definition below) -->
+    <context:property-placeholder location="classpath:data/db.properties" system-properties-mode="OVERRIDE"/>
+
+    <!-- DataSource configuration for the tomcat jdbc connection pool -->
+    <!-- org.springframework.jdbc.datasource.DriverManagerDataSource -->
+    <!-- org.apache.tomcat.jdbc.pool.DataSource -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+          p:driverClassName="${jdbc.driverClassName}" 
+          p:url="${jdbc.url}"
+          p:username="${jdbc.username}" 
+          p:password="${jdbc.password}"/>
+          
+    <!-- Database initializer. If any of the script fails, the initialization stops. -->
+    <!-- As an alternative, for embedded databases see <jdbc:embedded-database/>. -->
+     <jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="${jdbc.initLocation}"/>
+        <jdbc:script location="${jdbc.dataLocation}"/>
+    </jdbc:initialize-database>
+     
+    <!-- JdbcTemplate -->  
+	<bean id="jdbcTemplate"  
+	    class="org.springframework.jdbc.core.JdbcTemplate">  
+	    <property name="dataSource" ref="dataSource"></property>  
+	</bean> 
+	
+</beans>

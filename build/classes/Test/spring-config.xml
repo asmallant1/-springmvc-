@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+xmlns:p="http://www.springframework.org/schema/p" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:mvc="http://www.springframework.org/schema/mvc"  
+xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                    http://www.springframework.org/schema/beans/spring-beans.xsd  
+                    http://www.springframework.org/schema/context 
+                    http://www.springframework.org/schema/context/spring-context.xsd  
+                    http://www.springframework.org/schema/mvc 
+                    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                    http://www.springframework.org/schema/jdbc 
+         			http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <!-- 自动扫描的包名，前端控制器将在指定的包中查找Controller -->
+    <context:component-scan base-package="controller" />   
+	<!-- 自动扫描的包名，前端控制器将在指定的包中查找Repository -->
+    <context:component-scan base-package="repository" /> 
+	<!-- 自动扫描的包名，前端控制器将在指定的包中查找Properties -->
+    <context:component-scan base-package="properties" /> 
+	<!-- 自动扫描的包名，前端控制器将在指定的包中查找Service -->
+    <context:component-scan base-package="service" />
+    
+    <!-- 支持MVC注解映射 -->
+    <mvc:annotation-driven />
+    
+        <!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+    <!-- (in this case, JDBC-related settings for the dataSource definition below) -->
+    <context:property-placeholder location="classpath:data/db.properties" system-properties-mode="OVERRIDE"/>
+
+    <!-- DataSource configuration for the tomcat jdbc connection pool -->
+    <!-- org.springframework.jdbc.datasource.DriverManagerDataSource -->
+    <!-- org.apache.tomcat.jdbc.pool.DataSource -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+          p:driverClassName="${jdbc.driverClassName}" 
+          p:url="${jdbc.url}"
+          p:username="${jdbc.username}" 
+          p:password="${jdbc.password}"/>
+      
+          
+    <!-- Database initializer. If any of the script fails, the initialization stops. -->
+    <!-- As an alternative, for embedded databases see <jdbc:embedded-database/>. -->
+    <!--   <jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="${jdbc.initLocation}"/>
+        <jdbc:script location="${jdbc.dataLocation}"/>
+    </jdbc:initialize-database>-->
+     
+    <!-- JdbcTemplate -->  
+	<bean id="jdbcTemplate"  
+	    class="org.springframework.jdbc.core.JdbcTemplate">  
+	    <property name="dataSource" ref="dataSource"></property>  
+	</bean> 
+
+</beans>
